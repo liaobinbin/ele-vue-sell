@@ -12,9 +12,14 @@
         <div class="desc">另需配送费￥{{ deliveryPrice }}元</div>
       </div>
       <div class="content-right">
-        <div class="pay">
+        <div class="pay" :class="payClass">
           {{ payDesc }}
         </div>
+      </div>
+    </div>
+    <div class="ball-container">
+      <div transition="drop" v-for="ball in balls" v-show="ball.show" class="ball">
+        <div class="inner"></div>
       </div>
     </div>
   </div>
@@ -38,19 +43,41 @@
         default: 0
       }
     },
+    data() {
+      return {
+        balls: [
+          {
+            show: false
+          },
+          {
+            show: false
+          },
+          {
+            show: false
+          },
+          {
+            show: false
+          },
+          {
+            show: false
+          }
+        ]
+      };
+    },
     computed: {
       totalPrice() {
         let total = 0;
         this.selectFoods.forEach((food) => {
-          total += food.Price * food.count;
+          total += food.price * food.count;
         });
         return total;
       },
       totalCount() {
         let count = 0;
-        this.selectFood.forEach((food) => {
+        this.selectFoods.forEach((food) => {
           count += food.count;
         });
+        return count;
       },
       payDesc() {
         if (this.totalPrice === 0) {
@@ -61,6 +88,18 @@
         } else {
           return '去结算';
         }
+      },
+      payClass() {
+        if (this.totalPrice < this.minPrice) {
+          return 'not-enough';
+        } else {
+          return 'enough';
+        }
+      }
+    },
+    methods: {
+      drop(el) {
+        console.log(el);
       }
     }
   };
@@ -99,13 +138,13 @@
             border-radius: 50%
             text-align: center
             background: #2b343c
-            &.heighlight
+            &.highlight
               background: rgb(0, 160, 220)
             .icon-shopping_cart
               line-height: 44px
               font-size: 24px
               color: #80858a
-              &.heighlight
+              &.highlight
                 color: #ffffff
           .num
             position: absolute
@@ -148,5 +187,23 @@
           text-align: center
           font-size: 12px
           font-weight: 700
-          background: #2b333b
+          &.not-enough
+            background: #2b333b
+          &.enough
+            background: #00b43c
+            color: #ffffff
+    .ball-container
+      .ball
+        position: fixed
+        left: 32px
+        bottom: 22px
+        z-index: 200
+        &.drop-transition
+          transition: all 0.4s
+          .inner
+            width: 16px
+            height: 16px
+            border-radius: 50%
+            background: rgb(0, 160, 220)
+            transition: all 0.4s
 </style>
